@@ -46,7 +46,8 @@ gtkwave wave.vcd
 
 The testbench sends the byte `0x68` and waits until the receiver confirms it got the same value back. The clock runs at 100 MHz and the baud divider is set to 10, so you get a baud tick every 10 cycles.
 
-![UART Block Diagram](docs/![block-dia](https://github.com/user-attachments/assets/22288bff-ee83-45d2-a497-7dab6a246b25)
+![UART Block Diagram](docs/[block-dia](https://github.com/user-attachments/assets/513edd0a-e979-48fe-9c03-885f88c2cf97)
+)
 )
 
 ---
