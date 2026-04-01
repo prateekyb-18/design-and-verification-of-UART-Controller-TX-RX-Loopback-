@@ -1,105 +1,61 @@
-Design and Verification of UART Controller (TX-RX Loopback)
+# UART Controller (TX-RX Loopback) using verilog
 
-A fully functional UART communication system implemented in Verilog/SystemVerilog, including a Baud Rate Generator, Transmitter (TX), Receiver (RX), and a Top-level loopback design. Simulated and verified using Icarus Verilog and GTKWave.
+This is a simple UART (Universal Asynchronous Receiver Transmitter) I built using Verilog. It covers the full communication flow — generating the baud rate, transmitting data serially, and receiving it back — all verified through simulation.
 
-Module Overview
+---
 
-1. baud_gen.v — Baud Rate Generator
-Generates a baud_tick pulse every DIV clock cycles to control the TX/RX sampling rate.
-Parameter	Value	Description
-DIV	10	Clock divider (baud tick every 10 cycles)
-Port	Direction	Width	Description
-clk	Input	1	System clock
-rst	Input	1	Active-high synchronous reset
-baud_tick	Output	1	Baud rate pulse
-________________________________________
-2. uart_tx.v — UART Transmitter
-Serializes an 8-bit data word into a 10-bit UART frame (1 start bit + 8 data bits + 1 stop bit) and transmits it LSB-first on the tx line.
-Port	Direction	Width	Description
-clk	Input	1	System clock
-rst	Input	1	Active-high reset
-baud_tick	Input	1	Baud rate tick from baud_gen
-start	Input	1	Pulse high to begin transmission
-tx_data	Input	8	Byte to transmit
-tx	Output	1	Serial TX line (idle HIGH)
-done	Output	1	Pulses HIGH when transmission complete
-Frame format:
-[ START(0) | D0 | D1 | D2 | D3 | D4 | D5 | D6 | D7 | STOP(1) ]
-________________________________________
-3. uart_rx.v — UART Receiver
-Detects the start bit (falling edge on rx), then samples the incoming serial stream on each baud_tick to reconstruct the 8-bit data word.
-Port	Direction	Width	Description
-clk	Input	1	System clock
-rst	Input	1	Active-high reset
-baud_tick	Input	1	Baud rate tick from baud_gen
-rx	Input	1	Serial RX line
-rx_data	Output	8	Received byte
-done	Output	1	Pulses HIGH when reception complete
-________________________________________
-4. uart_top.v — Top-Level Module (Loopback)
-Instantiates baud_gen, uart_tx, and uart_rx. The TX output is wired directly back to the RX input to form a loopback connection — useful for functional verification without external hardware.
-clk, rst ──► baud_gen ──► baud_tick ──► uart_tx ──► tx_line ──► uart_rx
-                                                        │
-                                                   (loopback)
-Port	Direction	Width	Description
-clk	Input	1	System clock
-rst	Input	1	Active-high reset
-start	Input	1	Start transmission
-tx_data	Input	8	Data to transmit
-tx	Output	1	TX serial output
-rx_data	Output	8	Received data
-done_tx	Output	1	Transmission complete
-done_rx	Output	1	Reception complete
-________________________________________
- Simulation
-Testbench: tb_uart.sv
-•	Clock: 100 MHz (10 ns period)
-•	Test data: 0x68 (ASCII 'h')
-•	Checks: Waits for done_rx, then prints transmitted vs received data
-•	Waveform dump: Generates wave.vcd for GTKWave inspection
-•	Run Simulation (Icarus Verilog)
+## What's Inside
 
-•	Compile
+The design has four modules that work together:
 
-1.	iverilog -g2012 -o sim tb/tb_uart.sv src/uart_top.v src/uart_tx.v src/uart_rx.v src/baud_gen.v
+- **baud_gen** — generates a tick every 10 clock cycles to control the timing of TX and RX
+- **uart_tx** — takes an 8-bit value and sends it out as a serial stream (start bit → 8 data bits → stop bit)
+- **uart_rx** — listens on the line, detects the start bit, and reconstructs the original byte
+- **uart_top** — wires everything together with a loopback (TX feeds directly into RX), which makes it easy to test without any external hardware
 
-•	Run
+---
 
-1.	vvp sim
+## How to Simulate
 
-•	Expected output:
+I used Icarus Verilog for simulation and GTKWave to view the waveforms.
 
-1.	 TRANSMITTED DATA = 68
-2.	 RECEIVED DATA    = 68
+```bash
+# Compile
+iverilog -g2012 -o sim tb_uart.sv uart_top.v uart_tx.v uart_rx.v baud_gen.v
 
-•	View Waveform (GTKWave)
-1)	gtkwave wave.vcd
+# Run
+vvp sim
+```
 
-📊 Block Diagram
- 
+You should see this in the terminal:
+```
+=================================
+TRANSMITTED DATA = 68
+RECEIVED DATA    = 68
+=================================
+```
 
- Simulation Results
-The testbench transmits 0x68 and the receiver correctly captures the same byte, confirming the loopback works as expected.
-Signal	Value
-tx_data	0x68
-rx_data	0x68
-done_tx	Pulsed HIGH after 10 baud ticks
-done_rx	Pulsed HIGH after full frame received
+To view the waveform:
+```bash
+gtkwave wave.vcd
+```
 
-Tools Used
-Tool	Purpose
-Icarus Verilog
-RTL simulation / compilation
-GTKWave
-Waveform viewer
-Yosys
-Synthesis & design statistics
+---
 
-Synthesis Stats (Yosys)
-Module	Cells
-baud_gen	19
-uart_tx	48
-uart_rx	44
-Total	111
+## Test Details
 
+The testbench sends the byte `0x68` and waits until the receiver confirms it got the same value back. The clock runs at 100 MHz and the baud divider is set to 10, so you get a baud tick every 10 cycles.
 
+![UART Block Diagram](docs/uart.png)
+
+---
+
+## Tools Used
+
+- Icarus Verilog — simulation
+- GTKWave — waveform viewer  
+- Yosys — synthesis and design stats
+
+---
+
+Built this as part of learning RTL design and digital communication fundamentals. Feel free to use or modify it.
