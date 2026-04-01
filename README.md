@@ -7,21 +7,6 @@ A fully functional UART communication system implemented in Verilog/SystemVerilo
 ## 📁 Project Structure
 
 ```
-uart-verilog/
-├── src/
-│   ├── uart_top.v        # Top-level module (loopback: TX → RX)
-│   ├── uart_tx.v         # UART Transmitter
-│   ├── uart_rx.v         # UART Receiver
-│   └── baud_gen.v        # Baud Rate Generator
-├── tb/
-│   └── tb_uart.sv        # SystemVerilog Testbench
-├── docs/
-│   ├── uart.png          # Block diagram
-│   └── uart_project_summary.svg
-├── .gitignore
-└── README.md
-```
-
 ---
 
 ## 🔧 Module Overview
@@ -131,7 +116,7 @@ gtkwave wave.vcd
 
 ## 📊 Block Diagram
 
-![UART Block Diagram](docs/uart.png)
+![UART Block Diagram]docs/[block-dia](https://github.com/user-attachments/assets/eb7495f5-8919-4059-8283-2cb3fa3cc9f0)
 
 ---
 
