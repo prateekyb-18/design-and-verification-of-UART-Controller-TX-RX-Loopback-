@@ -1,4 +1,4 @@
-# Desung and verification of UART Controller (TX-RX LOOPBACK)
+# Design and verification of UART Controller (TX-RX LOOPBACK)
 
 A fully functional UART communication system implemented in Verilog/SystemVerilog, including a Baud Rate Generator, Transmitter (TX), Receiver (RX), and a Top-level loopback design. Simulated and verified using Icarus Verilog and GTKWave.
 
@@ -166,14 +166,6 @@ The testbench transmits `0x68` and the receiver correctly captures the same byte
 | `uart_tx` | 48 |
 | `uart_rx` | 44 |
 | **Total** | **111** |
-
----
-
-## 🚀 How to Extend
-
-- **Change baud rate:** Modify the `DIV` parameter in `baud_gen.v`
-- **Target FPGA:** Synthesize `uart_top.v` with your FPGA toolchain (Vivado / Quartus)
-- **Real hardware test:** Connect `tx` to a USB-UART bridge and remove the loopback in `uart_top.v`
 
 ---
 
